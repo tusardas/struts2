@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans  http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>/WEB-INF/database.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName">
+            <value>${hibernate.connection.driver_class}</value>
+        </property>
+        <property name="url">
+            <value>${hibernate.connection.url}</value>
+        </property>
+        <property name="username">
+            <value>${hibernate.connection.username}</value>
+        </property>
+        <property name="password">
+            <value>${hibernate.connection.password}</value>
+        </property>
+    </bean>
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource">
+			<ref local="dataSource" />
+		</property>
+		<property name="mappingResources">
+			<list>
+				<value>News.hbm.xml</value>
+			</list>
+		</property>
+		
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.hbm2ddl.auto">none</prop> <!--- NEVER CHANGE THIS -->
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<prop key="hibernate.show_sql">${hibernate.connection.show_sql}</prop>
+			</props>
+		</property>
+	</bean>
+	
+	
+	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<bean id="dbProvider" class="com.heytusar.struts2.persistance.BasePersistenceImpl">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	
+	<bean id="newsPersistance" class="com.heytusar.struts2.persistance.NewsPersistance" parent="dbProvider">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+		
+	<bean id="newsServiceTarget" class="com.heytusar.struts2.service.NewsService">
+		<property name="newsPersistance" ref="newsPersistance"/>
+	</bean>
+	
+	<bean id="newsService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+       <property name="transactionManager"><ref bean="transactionManager"/></property>
+       <property name="target"><ref local="newsServiceTarget"/></property>
+       <property name="proxyTargetClass"><value>true</value></property>
+       <property name="transactionAttributes">
+            <props>
+            	  <prop key="get*">PROPAGATION_SUPPORTS</prop>
+               	  <prop key="save*">PROPAGATION_REQUIRED</prop>
+               	  <prop key="update*">PROPAGATION_REQUIRED</prop>
+               	  <prop key="delete*">PROPAGATION_REQUIRED</prop>
+                  <prop key="*">PROPAGATION_SUPPORTS</prop>
+            </props>
+       </property>
+    </bean>
+     
+</beans>

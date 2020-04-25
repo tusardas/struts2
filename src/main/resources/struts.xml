@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+	<constant name="struts.enable.DynamicMethodInvocation" value="false" />
+	<constant name="struts.devMode" value="false" />
+	<constant name="struts.custom.i18n.resources" value="ApplicationResources" />
+	<constant name="struts.action.extension" value=""/> 
+	<constant name="struts.action.excludePattern" value="/static/.*"/> 
+	 
+	<package name="default" namespace="/" extends="struts-default">
+		<action name="index.jsp">
+	        <result>/index.jsp</result>
+	    </action>
+		<action name="newsListing" method="newsListing" class="com.heytusar.struts2.action.NewsAction">
+			<result name="success">/WEB-INF/jsp/newsListing.jsp</result>
+		</action>
+	</package>
+	
+</struts>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping SYSTEM "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+
+<hibernate-mapping auto-import="true" default-lazy="false">
+    
+    <class name="com.heytusar.struts2.model.News" table="news">
+		
+		<id name="id" column="id" type="java.lang.Long">
+   			<generator class="increment"></generator>
+   		</id>
+   		
+        <property
+            name="headline"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="headline"
+        />
+        
+        <property
+            name="content"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="content"
+        />
+        
+    </class>
+
+</hibernate-mapping>
